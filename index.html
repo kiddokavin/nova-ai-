@@ -81,6 +81,33 @@
       position: relative;
     }
 
+    /* Toast Notification */
+    .toast-notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--panel);
+      border: 1px solid var(--amber);
+      color: var(--text);
+      padding: 10px 18px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      font-size: 13.5px;
+      z-index: 1000;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .toast-notification.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
     /* Sidebar Overlay for Mobile */
     .sidebar-overlay {
       display: none;
@@ -256,7 +283,6 @@
       cursor: pointer;
       transition: var(--transition);
       position: relative;
-      group: relative;
     }
 
     .history-item:hover {
@@ -455,7 +481,7 @@
       position: absolute;
       top: calc(100% + 6px);
       left: 0;
-      width: 240px;
+      width: 250px;
       background: var(--panel);
       border: 1px solid var(--border-light);
       border-radius: var(--radius-md);
@@ -1260,6 +1286,12 @@
 </head>
 <body>
 
+  <!-- Toast Notification Box -->
+  <div id="toast-notification" class="toast-notification">
+    <i class="fa-solid fa-circle-check" style="color: var(--amber);"></i>
+    <span id="toast-message">Action successful</span>
+  </div>
+
   <div class="app-container">
     
     <!-- Mobile Sidebar Backdrop Overlay -->
@@ -1268,7 +1300,7 @@
     <!-- Sidebar Component -->
     <aside class="sidebar" id="sidebar">
       <div class="brand">
-        <a href="#" class="brand-logo">
+        <a href="#" class="brand-logo" onclick="event.preventDefault(); createNewChat();">
           <span class="dot"></span>
           Nova AI
         </a>
@@ -1324,32 +1356,32 @@
             <i class="fa-solid fa-bars"></i>
           </button>
 
-          <!-- Model Switcher Dropdown -->
+          <!-- Model Selector Dropdown -->
           <div class="model-selector-wrapper">
-            <button class="model-selector-btn" onclick="toggleModelDropdown()">
+            <button class="model-selector-btn" onclick="toggleModelDropdown(event)">
               <i class="fa-solid fa-wand-magic-sparkles model-icon"></i>
               <span id="selected-model-name">Claude 3.5 Sonnet</span>
               <i class="fa-solid fa-chevron-down" style="font-size: 10px; color: var(--text-dim);"></i>
             </button>
 
             <div class="model-dropdown" id="model-dropdown">
-              <div class="model-option selected" onclick="selectModel('claude-3-5-sonnet', 'Claude 3.5 Sonnet')">
+              <div class="model-option selected" data-model="claude-3-5-sonnet" onclick="selectModel('claude-3-5-sonnet', 'Claude 3.5 Sonnet', event)">
                 <i class="fa-solid fa-brain" style="color: #E05D26; margin-top: 2px;"></i>
                 <div class="model-option-details">
                   <span class="model-option-name">Claude 3.5 Sonnet</span>
-                  <span class="model-option-desc">Superior reasoning, coding & creativity</span>
+                  <span class="model-option-desc">Superior reasoning & coding</span>
                 </div>
               </div>
 
-              <div class="model-option" onclick="selectModel('gpt-4o', 'GPT-4o')">
+              <div class="model-option" data-model="gpt-4o" onclick="selectModel('gpt-4o', 'GPT-4o', event)">
                 <i class="fa-solid fa-bolt" style="color: #10A37F; margin-top: 2px;"></i>
                 <div class="model-option-details">
                   <span class="model-option-name">GPT-4o</span>
-                  <span class="model-option-desc">Fast, versatile multimodal intelligence</span>
+                  <span class="model-option-desc">Multimodal intelligence</span>
                 </div>
               </div>
 
-              <div class="model-option" onclick="selectModel('deepseek-chat', 'DeepSeek V3')">
+              <div class="model-option" data-model="deepseek-chat" onclick="selectModel('deepseek-chat', 'DeepSeek V3', event)">
                 <i class="fa-solid fa-code" style="color: #4D6BFE; margin-top: 2px;"></i>
                 <div class="model-option-details">
                   <span class="model-option-name">DeepSeek V3</span>
@@ -1357,11 +1389,11 @@
                 </div>
               </div>
 
-              <div class="model-option" onclick="selectModel('gemini-2.0-flash', 'Gemini 2.0 Flash')">
+              <div class="model-option" data-model="gemini-2.0-flash" onclick="selectModel('gemini-2.0-flash', 'Gemini 2.0 Flash', event)">
                 <i class="fa-solid fa-feather" style="color: #FFB703; margin-top: 2px;"></i>
                 <div class="model-option-details">
                   <span class="model-option-name">Gemini 2.0 Flash</span>
-                  <span class="model-option-desc">Ultra-rapid responses & synthesis</span>
+                  <span class="model-option-desc">Ultra-rapid responses</span>
                 </div>
               </div>
             </div>
@@ -1475,7 +1507,7 @@
           </div>
 
           <div class="composer-footer-hint">
-            Nova AI can produce inaccurate info. Powered by Puter.js & standard web APIs.
+            Nova AI can produce inaccurate info. Powered by Puter.js & modern open web APIs.
           </div>
         </div>
       </footer>
@@ -1484,7 +1516,7 @@
   </div>
 
   <!-- Settings Modal -->
-  <div class="modal-backdrop" id="settings-modal">
+  <div class="modal-backdrop" id="settings-modal" onclick="if(event.target===this) closeModal('settings-modal')">
     <div class="modal-card">
       <div class="modal-header">
         <h3><i class="fa-solid fa-sliders" style="color: var(--amber); margin-right: 8px;"></i> System Settings</h3>
@@ -1577,6 +1609,17 @@
       });
     });
 
+    // Toast Alert Helper
+    function showToast(msg) {
+      const toast = document.getElementById('toast-notification');
+      const toastMsg = document.getElementById('toast-message');
+      if (toast && toastMsg) {
+        toastMsg.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+      }
+    }
+
     // --- State & Storage Handlers ---
     function loadStateFromStorage() {
       try {
@@ -1661,6 +1704,7 @@
         renderHistory();
         renderChatMessages();
       }
+      showToast('Chat deleted');
     }
 
     function clearCurrentChat() {
@@ -1669,6 +1713,7 @@
       chat.messages = [];
       saveStateToStorage();
       renderChatMessages();
+      showToast('Chat history cleared');
     }
 
     function getCurrentChat() {
@@ -1851,15 +1896,17 @@
       STATE.isGenerating = true;
       DOM.sendBtn.disabled = true;
 
-      if (STATE.mode === 'image') {
-        await handleImageGeneration(input);
-      } else {
-        await handleChatGeneration(chat);
+      try {
+        if (STATE.mode === 'image') {
+          await handleImageGeneration(input);
+        } else {
+          await handleChatGeneration(chat);
+        }
+      } finally {
+        STATE.isGenerating = false;
+        DOM.sendBtn.disabled = false;
+        saveStateToStorage();
       }
-
-      STATE.isGenerating = false;
-      DOM.sendBtn.disabled = false;
-      saveStateToStorage();
     }
 
     // --- Chat Generation via Puter.js ---
@@ -1881,14 +1928,12 @@
             const res = await puter.ai.chat(messagesPayload, { model: STATE.selectedModel });
             assistantReply = typeof res === 'string' ? res : (res.message?.content || res.text || JSON.stringify(res));
           } catch (err) {
-            console.warn('Primary model failed, attempting fallback:', err);
-            // Fallback call
+            console.warn('Primary model failed, attempting default fallback:', err);
             const res = await puter.ai.chat(messagesPayload);
-            assistantReply = typeof res === 'string' ? res : (res.message?.content || res.text);
+            assistantReply = typeof res === 'string' ? res : (res.message?.content || res.text || JSON.stringify(res));
           }
         } else {
-          // Local fallback simulation if Puter offline
-          assistantReply = "Puter.js library is currently loading or unavailable. Please ensure internet connectivity to reach AI models.";
+          assistantReply = "Puter.js library is loading or offline. Please check your internet connection.";
         }
 
         removeThinkingUI();
@@ -2006,6 +2051,7 @@
 
     function copyToClipboard(text) {
       navigator.clipboard.writeText(text);
+      showToast('Copied to clipboard');
     }
 
     function escapeHtml(str) {
@@ -2036,18 +2082,23 @@
       }
     }
 
-    function toggleModelDropdown() {
+    function toggleModelDropdown(e) {
+      if (e) e.stopPropagation();
       DOM.modelDropdown.classList.toggle('show');
     }
 
-    function selectModel(modelId, name) {
+    function selectModel(modelId, name, e) {
+      if (e) e.stopPropagation();
       STATE.selectedModel = modelId;
       STATE.selectedModelName = name;
       DOM.selectedModelName.textContent = name;
       
       document.querySelectorAll('.model-option').forEach(el => el.classList.remove('selected'));
-      event.currentTarget.classList.add('selected');
-      toggleModelDropdown();
+      const target = e ? e.currentTarget : document.querySelector(`.model-option[data-model="${modelId}"]`);
+      if (target) target.classList.add('selected');
+
+      DOM.modelDropdown.classList.remove('show');
+      showToast(`Model set to ${name}`);
     }
 
     // Close dropdown on outside click
@@ -2114,7 +2165,7 @@
 
     function toggleVoiceInput(forceState) {
       if (!STATE.speechRecognition) {
-        alert('Web Speech Recognition is not supported by your browser.');
+        showToast('Web Speech Recognition is not supported by your browser');
         return;
       }
 
@@ -2124,6 +2175,7 @@
       if (shouldListen) {
         DOM.micBtn.classList.add('active');
         STATE.speechRecognition.start();
+        showToast('Listening...');
       } else {
         DOM.micBtn.classList.remove('active');
         try { STATE.speechRecognition.stop(); } catch(e){}
@@ -2137,6 +2189,7 @@
       const utterance = new SpeechSynthesisUtterance(cleanText);
       utterance.rate = 1.0;
       window.speechSynthesis.speak(utterance);
+      showToast('Speaking response...');
     }
 
     // --- Modal Management ---
@@ -2154,6 +2207,7 @@
       updateUserUI();
       saveStateToStorage();
       closeModal('settings-modal');
+      showToast('Settings saved');
     }
 
     function exportCurrentChat() {
@@ -2170,6 +2224,7 @@
       a.download = `${chat.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.md`;
       a.click();
       URL.revokeObjectURL(url);
+      showToast('Exported chat to Markdown');
     }
   </script>
 </body>
