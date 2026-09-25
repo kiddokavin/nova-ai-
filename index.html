@@ -1968,11 +1968,6 @@
       else renderHistory();
       showToast(`Signed in via ${provider}`);
     }
-      showAuthScreen(false);
-      if (!STATE.chats || STATE.chats.length === 0) createNewChat();
-      else renderHistory();
-      showToast('Welcome, Explorer!');
-    }
 
     function performLogout() {
       STATE.isLoggedIn = false;
