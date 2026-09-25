@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nova AI — ChatGPT Style Assistant</title>
-  <meta name="description" content="Nova AI — Sleek ChatGPT-inspired multi-model AI assistant with authentication & search.">
+  <meta name="description" content="Nova AI — Sleek ChatGPT-inspired multi-model AI assistant with authentication & settings.">
 
   <!-- Inter & Fira Code Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -98,7 +98,7 @@
       transform: translateY(0);
     }
 
-    /* ChatGPT Auth Screen */
+    /* ChatGPT Auth Landing Screen */
     .auth-overlay {
       position: fixed;
       inset: 0;
@@ -127,8 +127,8 @@
     }
 
     .auth-logo {
-      width: 48px;
-      height: 48px;
+      width: 52px;
+      height: 52px;
       border-radius: 50%;
       background: var(--accent-green);
       color: #ffffff;
@@ -139,7 +139,7 @@
     }
 
     .auth-title {
-      font-size: 30px;
+      font-size: 32px;
       font-weight: 600;
       color: #ffffff;
       margin-bottom: 8px;
@@ -242,6 +242,50 @@
 
     .auth-input-group input:focus {
       border-color: var(--accent-green);
+    }
+
+    /* Google Sign In Chooser Modal */
+    .google-modal-card {
+      background: #ffffff;
+      color: #1f1f1f;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 380px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.6);
+    }
+
+    .google-account-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      cursor: pointer;
+      margin-top: 12px;
+      transition: background 0.15s ease;
+      text-align: left;
+    }
+
+    .google-account-item:hover {
+      background: #f5f5f5;
+    }
+
+    .google-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #4285F4;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
     }
 
     /* Main App Layout */
@@ -1118,7 +1162,7 @@
       color: var(--text-tertiary);
     }
 
-    /* Modal Dialog */
+    /* ChatGPT Exact Settings Modal (Tabbed Layout) */
     .modal-backdrop {
       display: none;
       position: fixed;
@@ -1132,115 +1176,105 @@
     }
     .modal-backdrop.show { display: flex; }
 
-    .modal-card {
+    .chatgpt-settings-card {
       background: #212121;
       border: 1px solid var(--border-color);
       border-radius: 16px;
       width: 100%;
-      max-width: 520px;
+      max-width: 680px;
+      height: 480px;
       display: flex;
-      flex-direction: column;
       overflow: hidden;
       animation: modalFade 0.2s ease;
     }
 
-    @keyframes modalFade {
-      from { opacity: 0; transform: scale(0.96); }
-      to { opacity: 1; transform: scale(1); }
+    .settings-sidebar-tabs {
+      width: 180px;
+      background: #171717;
+      border-right: 1px solid var(--border-color);
+      padding: 14px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
-    .modal-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border-color);
+    .settings-tab-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      color: var(--text-secondary);
+      font-size: 13.5px;
+      font-weight: 500;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .settings-tab-btn:hover {
+      background: rgba(255,255,255,0.05);
+      color: var(--text-primary);
+    }
+
+    .settings-tab-btn.active {
+      background: #2F2F2F;
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .settings-content-area {
+      flex: 1;
+      padding: 20px 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .settings-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 14px;
     }
 
-    .modal-header h3 {
-      font-size: 17px;
+    .settings-head h3 {
+      font-size: 18px;
       font-weight: 600;
       color: var(--text-primary);
     }
 
-    .modal-close {
-      background: transparent;
-      border: none;
-      color: var(--text-secondary);
-      cursor: pointer;
-    }
-
-    .modal-body {
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .field-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .field-group label {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-secondary);
-    }
-
-    .field-group textarea, .field-group input {
-      background: #171717;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 10px;
-      color: var(--text-primary);
-      font-family: inherit;
-      font-size: 13.5px;
-      outline: none;
-    }
-
-    .modal-footer {
-      padding: 12px 20px;
-      border-top: 1px solid var(--border-color);
+    .settings-row {
       display: flex;
       align-items: center;
-      justify-content: flex-end;
-      gap: 10px;
-      background: #171717;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
     }
 
-    .btn-secondary {
-      background: transparent;
+    .settings-row-label {
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .settings-row-sub {
+      font-size: 11.5px;
+      color: var(--text-tertiary);
+    }
+
+    .settings-select, .settings-input {
+      background: #171717;
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      padding: 8px 14px;
-      color: var(--text-secondary);
+      padding: 8px 12px;
+      color: var(--text-primary);
       font-size: 13px;
-      cursor: pointer;
-    }
-
-    .btn-primary {
-      background: var(--accent-green);
-      border: none;
-      border-radius: 8px;
-      padding: 8px 14px;
-      color: #ffffff;
-      font-weight: 600;
-      font-size: 13px;
-      cursor: pointer;
-    }
-
-    /* Sandbox Modal */
-    .sandbox-card {
-      max-width: 880px;
-      height: 80vh;
-    }
-    .sandbox-frame {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: #ffffff;
+      outline: none;
     }
 
     /* Mobile Adaptations */
@@ -1260,6 +1294,8 @@
       .mobile-drawer-toggle { display: block; }
       .suggestion-grid { grid-template-columns: 1fr; }
       .msg-wrapper { max-width: 92%; }
+      .chatgpt-settings-card { flex-direction: column; height: auto; max-height: 85vh; }
+      .settings-sidebar-tabs { width: 100%; flex-direction: row; border-right: none; border-bottom: 1px solid var(--border-color); }
     }
   </style>
 </head>
@@ -1271,7 +1307,7 @@
     <span id="toast-text">Success</span>
   </div>
 
-  <!-- ChatGPT Auth / Login Landing Screen -->
+  <!-- ChatGPT Auth Landing Screen -->
   <div class="auth-overlay" id="auth-screen">
     <div class="auth-card">
       <div class="auth-logo">
@@ -1282,24 +1318,43 @@
 
       <div class="auth-input-group">
         <label for="login-email">Email address</label>
-        <input type="email" id="login-email" placeholder="name@example.com" value="user@nova.ai">
+        <input type="email" id="login-email" placeholder="name@example.com" value="kiddokavin@gmail.com">
       </div>
 
       <div class="auth-btn-group">
-        <button class="auth-btn-primary" onclick="performLogin()">Log in</button>
-        <button class="auth-btn-secondary" onclick="performGuestLogin()">
-          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8M8 12h8"></path></svg>
-          Continue as Guest
-        </button>
-      </div>
-
-      <div class="auth-divider">OR</div>
-
-      <div class="auth-btn-group">
-        <button class="auth-btn-secondary" onclick="performGuestLogin()">
+        <button class="auth-btn-primary" onclick="performEmailLogin()">Log in</button>
+        <button class="auth-btn-secondary" onclick="openGoogleAccountChooser()">
           <svg class="icon" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"></path></svg>
           Continue with Google
         </button>
+        <button class="auth-btn-secondary" onclick="performGuestLogin()">
+          Continue as Guest
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Google Account Chooser Modal -->
+  <div class="modal-backdrop" id="google-chooser-modal" onclick="if(event.target===this) closeModal('google-chooser-modal')">
+    <div class="google-modal-card">
+      <svg class="icon" style="width: 32px; height: 32px; color: #4285F4; margin-bottom: 12px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8M8 12h8"></path></svg>
+      <h3 style="font-size: 18px; font-weight: 600; color: #1f1f1f; margin-bottom: 4px;">Sign in with Google</h3>
+      <p style="font-size: 13px; color: #5f6368; margin-bottom: 16px;">Choose an account to continue to Nova AI</p>
+
+      <div class="google-account-item" onclick="selectGoogleAccount('Kavin', 'kiddokavin@gmail.com')">
+        <div class="google-avatar">K</div>
+        <div>
+          <div style="font-weight: 600; font-size: 14px; color: #1f1f1f;">Kavin</div>
+          <div style="font-size: 12px; color: #5f6368;">kiddokavin@gmail.com</div>
+        </div>
+      </div>
+
+      <div class="google-account-item" onclick="selectGoogleAccount('Developer', 'nova.developer@gmail.com')">
+        <div class="google-avatar" style="background: #34A853;">D</div>
+        <div>
+          <div style="font-weight: 600; font-size: 14px; color: #1f1f1f;">Developer Account</div>
+          <div style="font-size: 12px; color: #5f6368;">nova.developer@gmail.com</div>
+        </div>
       </div>
     </div>
   </div>
@@ -1349,7 +1404,7 @@
           <div class="user-avatar" id="user-avatar">K</div>
           <div class="user-details">
             <span class="user-name" id="user-name">User Account</span>
-            <span class="user-plan">Settings & System Prompt</span>
+            <span class="user-plan">Settings & Preferences</span>
           </div>
           <svg class="icon" style="color: var(--text-tertiary);" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
         </div>
@@ -1422,7 +1477,7 @@
       <section class="chat-container" id="chat-container">
         <div class="chat-content-max" id="chat-content-max">
           
-          <!-- ChatGPT Empty State Hero -->
+          <!-- ChatGPT Empty Hero -->
           <div class="empty-hero" id="empty-hero">
             <div class="hero-icon-bubble">
               <svg class="icon" style="width: 26px; height: 26px;" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"></path><path d="M12 6v6l4 2"></path></svg>
@@ -1497,31 +1552,26 @@
     </main>
   </div>
 
-  <!-- Settings Modal -->
+  <!-- Official ChatGPT Tabbed Settings Modal -->
   <div class="modal-backdrop" id="settings-modal" onclick="if(event.target===this) closeModal('settings-modal')">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3>Settings</h3>
-        <button class="modal-close" onclick="closeModal('settings-modal')">
-          <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    <div class="chatgpt-settings-card">
+      <div class="settings-sidebar-tabs">
+        <button class="settings-tab-btn active" id="tab-btn-general" onclick="switchSettingsTab('general')">
+          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          General
+        </button>
+        <button class="settings-tab-btn" id="tab-btn-persona" onclick="switchSettingsTab('persona')">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          Personalization
+        </button>
+        <button class="settings-tab-btn" id="tab-btn-data" onclick="switchSettingsTab('data')">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Data Controls
         </button>
       </div>
 
-      <div class="modal-body">
-        <div class="field-group">
-          <label for="system-prompt">Custom Instructions (System Persona)</label>
-          <textarea id="system-prompt" rows="4" placeholder="You are Nova AI, an advanced AI system with knowledge up to September 2026..."></textarea>
-        </div>
-
-        <div class="field-group">
-          <label for="user-display-name">Display Name</label>
-          <input type="text" id="user-display-name" placeholder="User">
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button class="btn-secondary" onclick="closeModal('settings-modal')">Cancel</button>
-        <button class="btn-primary" onclick="saveSettings()">Save</button>
+      <div class="settings-content-area" id="settings-tab-content">
+        <!-- Tab Content dynamically injected -->
       </div>
     </div>
   </div>
@@ -1544,14 +1594,17 @@
     // --- State Manager ---
     const STATE = {
       isLoggedIn: false,
+      activeSettingsTab: 'general',
       chats: [],
       currentChatId: null,
       selectedModel: 'gpt-4o',
       selectedModelName: 'ChatGPT 4o',
       mode: 'chat', // 'chat' | 'image'
+      theme: 'Dark',
+      voice: 'Cove',
       systemPrompt: 'You are Nova AI, an advanced, highly intelligent AI assistant equipped with up-to-date knowledge up to September 2026. Provide concise, accurate, insightful, and modern answers with clean markdown syntax.',
-      userName: 'Explorer',
-      userEmail: 'user@nova.ai',
+      userName: 'Kavin',
+      userEmail: 'kiddokavin@gmail.com',
       isGenerating: false,
       isListening: false,
       speechRecognition: null,
@@ -1578,10 +1631,9 @@
       attachmentPreview: document.getElementById('attachment-preview'),
       attachmentImg: document.getElementById('attachment-img'),
       attachmentName: document.getElementById('attachment-name'),
-      systemPromptInput: document.getElementById('system-prompt'),
-      userDisplayNameInput: document.getElementById('user-display-name'),
       userName: document.getElementById('user-name'),
       userAvatar: document.getElementById('user-avatar'),
+      settingsTabContent: document.getElementById('settings-tab-content'),
       toast: document.getElementById('toast'),
       toastText: document.getElementById('toast-text')
     };
@@ -1629,22 +1681,40 @@
       }
     }
 
-    function performLogin() {
-      const email = document.getElementById('login-email').value.trim() || 'user@nova.ai';
+    function performEmailLogin() {
+      const email = document.getElementById('login-email').value.trim() || 'kiddokavin@gmail.com';
       STATE.isLoggedIn = true;
       STATE.userEmail = email;
-      STATE.userName = email.split('@')[0] || 'User';
+      STATE.userName = email.split('@')[0] || 'Kavin';
       saveStorage();
       updateUserUI();
       showAuthScreen(false);
       if (!STATE.chats || STATE.chats.length === 0) createNewChat();
       else renderHistory();
-      showToast('Logged in successfully');
+      showToast('Signed in successfully');
+    }
+
+    function openGoogleAccountChooser() {
+      openModal('google-chooser-modal');
+    }
+
+    function selectGoogleAccount(name, email) {
+      STATE.isLoggedIn = true;
+      STATE.userName = name;
+      STATE.userEmail = email;
+      closeModal('google-chooser-modal');
+      saveStorage();
+      updateUserUI();
+      showAuthScreen(false);
+      if (!STATE.chats || STATE.chats.length === 0) createNewChat();
+      else renderHistory();
+      showToast(`Signed in as ${email}`);
     }
 
     function performGuestLogin() {
       STATE.isLoggedIn = true;
       STATE.userName = 'Explorer';
+      STATE.userEmail = 'guest@nova.ai';
       saveStorage();
       updateUserUI();
       showAuthScreen(false);
@@ -1663,20 +1733,21 @@
     // --- Storage ---
     function loadStorage() {
       try {
-        const savedAuth = localStorage.getItem('nova_v4_auth');
+        const savedAuth = localStorage.getItem('nova_v5_auth');
         if (savedAuth === 'true') STATE.isLoggedIn = true;
 
-        const savedChats = localStorage.getItem('nova_v4_chats');
+        const savedChats = localStorage.getItem('nova_v5_chats');
         if (savedChats) STATE.chats = JSON.parse(savedChats);
 
-        const savedSystem = localStorage.getItem('nova_v4_system');
+        const savedSystem = localStorage.getItem('nova_v5_system');
         if (savedSystem) STATE.systemPrompt = savedSystem;
 
-        const savedName = localStorage.getItem('nova_v4_user');
+        const savedName = localStorage.getItem('nova_v5_user');
         if (savedName) STATE.userName = savedName;
 
-        DOM.systemPromptInput.value = STATE.systemPrompt;
-        DOM.userDisplayNameInput.value = STATE.userName;
+        const savedEmail = localStorage.getItem('nova_v5_email');
+        if (savedEmail) STATE.userEmail = savedEmail;
+
         updateUserUI();
       } catch (e) {
         console.error('Storage load error:', e);
@@ -1685,10 +1756,11 @@
 
     function saveStorage() {
       try {
-        localStorage.setItem('nova_v4_auth', STATE.isLoggedIn ? 'true' : 'false');
-        localStorage.setItem('nova_v4_chats', JSON.stringify(STATE.chats));
-        localStorage.setItem('nova_v4_system', STATE.systemPrompt);
-        localStorage.setItem('nova_v4_user', STATE.userName);
+        localStorage.setItem('nova_v5_auth', STATE.isLoggedIn ? 'true' : 'false');
+        localStorage.setItem('nova_v5_chats', JSON.stringify(STATE.chats));
+        localStorage.setItem('nova_v5_system', STATE.systemPrompt);
+        localStorage.setItem('nova_v5_user', STATE.userName);
+        localStorage.setItem('nova_v5_email', STATE.userEmail);
       } catch (e) {
         console.error('Storage save error:', e);
       }
@@ -1696,7 +1768,7 @@
 
     function updateUserUI() {
       DOM.userName.textContent = STATE.userName;
-      DOM.userAvatar.textContent = STATE.userName.charAt(0).toUpperCase() || 'U';
+      DOM.userAvatar.textContent = STATE.userName.charAt(0).toUpperCase() || 'K';
     }
 
     function initPuterUser() {
@@ -2258,8 +2330,11 @@
       showToast('Reading response...');
     }
 
-    // --- Modal Controls ---
+    // --- Official ChatGPT Settings Modal Renderer ---
     function openModal(id) {
+      if (id === 'settings-modal') {
+        renderSettingsTab(STATE.activeSettingsTab);
+      }
       document.getElementById(id).classList.add('show');
     }
 
@@ -2267,13 +2342,119 @@
       document.getElementById(id).classList.remove('show');
     }
 
-    function saveSettings() {
-      STATE.systemPrompt = DOM.systemPromptInput.value.trim() || STATE.systemPrompt;
-      STATE.userName = DOM.userDisplayNameInput.value.trim() || 'Explorer';
-      updateUserUI();
-      saveStorage();
-      closeModal('settings-modal');
-      showToast('Settings saved');
+    function switchSettingsTab(tabName) {
+      STATE.activeSettingsTab = tabName;
+      document.querySelectorAll('.settings-tab-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+      if (activeBtn) activeBtn.classList.add('active');
+      renderSettingsTab(tabName);
+    }
+
+    function renderSettingsTab(tabName) {
+      const container = DOM.settingsTabContent;
+      if (!container) return;
+
+      if (tabName === 'general') {
+        container.innerHTML = `
+          <div class="settings-head">
+            <h3>General Settings</h3>
+            <button class="modal-close" onclick="closeModal('settings-modal')"><svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Theme</div>
+              <div class="settings-row-sub">Choose your preferred visual appearance</div>
+            </div>
+            <select class="settings-select" onchange="STATE.theme=this.value; saveStorage(); showToast('Theme updated');">
+              <option value="Dark" ${STATE.theme==='Dark'?'selected':''}>Dark</option>
+              <option value="Light" ${STATE.theme==='Light'?'selected':''}>Light</option>
+              <option value="System" ${STATE.theme==='System'?'selected':''}>System</option>
+            </select>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Speech Voice</div>
+              <div class="settings-row-sub">Select voice tone for text-to-speech</div>
+            </div>
+            <select class="settings-select" onchange="STATE.voice=this.value; saveStorage(); showToast('Voice updated');">
+              <option value="Cove" ${STATE.voice==='Cove'?'selected':''}>Cove (Natural)</option>
+              <option value="Breeze" ${STATE.voice==='Breeze'?'selected':''}>Breeze (Warm)</option>
+              <option value="Juniper" ${STATE.voice==='Juniper'?'selected':''}>Juniper (Expressive)</option>
+              <option value="Ember" ${STATE.voice==='Ember'?'selected':''}>Ember (Clear)</option>
+            </select>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Clear All Chats</div>
+              <div class="settings-row-sub">Delete all chat conversations</div>
+            </div>
+            <button class="btn-secondary" style="color:#FF5555; border-color:#FF5555;" onclick="clearAllChatsConfirm()">Clear all</button>
+          </div>
+        `;
+      } else if (tabName === 'persona') {
+        container.innerHTML = `
+          <div class="settings-head">
+            <h3>Custom Instructions</h3>
+            <button class="modal-close" onclick="closeModal('settings-modal')"><svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+          </div>
+          <div class="field-group">
+            <label>What would you like Nova AI to know about you?</label>
+            <input type="text" id="setting-user-name" value="${escapeHtml(STATE.userName)}" placeholder="Your name or role..." onchange="STATE.userName=this.value; updateUserUI(); saveStorage();">
+          </div>
+          <div class="field-group">
+            <label>How would you like Nova AI to respond? (System Persona)</label>
+            <textarea rows="5" id="setting-system-prompt" onchange="STATE.systemPrompt=this.value; saveStorage();">${escapeHtml(STATE.systemPrompt)}</textarea>
+          </div>
+          <button class="btn-primary" style="align-self:flex-end;" onclick="saveStorage(); showToast('Personalization saved'); closeModal('settings-modal');">Save Persona</button>
+        `;
+      } else if (tabName === 'data') {
+        container.innerHTML = `
+          <div class="settings-head">
+            <h3>Data Controls</h3>
+            <button class="modal-close" onclick="closeModal('settings-modal')"><svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Export Data</div>
+              <div class="settings-row-sub">Download conversation history to Markdown</div>
+            </div>
+            <button class="btn-secondary" onclick="exportDataMarkdown()">Export</button>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Knowledge Cutoff</div>
+              <div class="settings-row-sub">September 2026 Model Dataset</div>
+            </div>
+            <span style="font-size:12px; color:var(--accent-green); font-weight:600;">Active (Sept 2026)</span>
+          </div>
+        `;
+      }
+    }
+
+    function clearAllChatsConfirm() {
+      if (confirm('Are you sure you want to delete all chat history?')) {
+        STATE.chats = [];
+        saveStorage();
+        createNewChat();
+        closeModal('settings-modal');
+        showToast('All chats deleted');
+      }
+    }
+
+    function exportDataMarkdown() {
+      const session = getCurrentChat();
+      if (!session) return;
+      const md = `# ${session.title}\n*Exported from Nova AI on ${new Date().toLocaleDateString()}*\n\n` +
+        session.messages.map(m => `### ${m.role.toUpperCase()}\n${m.content}\n`).join('\n---\n\n');
+
+      const blob = new Blob([md], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${session.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.md`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Exported to Markdown');
     }
   </script>
 </body>
