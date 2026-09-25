@@ -1985,8 +1985,14 @@
         const savedChats = localStorage.getItem('nova_v5_chats');
         if (savedChats) STATE.chats = JSON.parse(savedChats);
 
+        const defaultSystem = 'You are Nova AI, an advanced, highly intelligent AI assistant equipped with complete up-to-date knowledge of world events, sports, technology, science, and politics through September 2026. You are aware of key 2026 global events (including 2026 FIFA World Cup, 2026 Asian Games, space exploration, and AI models like GPT-4o, Claude 3.5 Sonnet, Gemini 2.0 Flash, DeepSeek V3) as well as regional developments such as the 2026 Tamil Nadu Legislative Assembly Election won by TVK (Vijay) with 108 seats. Provide concise, accurate, modern, and insightful responses.';
+
         const savedSystem = localStorage.getItem('nova_v5_system');
-        if (savedSystem) STATE.systemPrompt = savedSystem;
+        if (!savedSystem || !savedSystem.includes('September 2026')) {
+          STATE.systemPrompt = defaultSystem;
+        } else {
+          STATE.systemPrompt = savedSystem;
+        }
 
         const savedName = localStorage.getItem('nova_v5_user');
         if (savedName) STATE.userName = savedName;
@@ -2281,7 +2287,7 @@
       try {
         let reply = '';
         const payload = [
-          { role: 'system', content: STATE.systemPrompt },
+          { role: 'system', content: `${STATE.systemPrompt}\n\n[World Knowledge Directive: Current Year is 2026. Current Month is September 2026. You are fully updated with world events, sports (2026 FIFA World Cup, 2026 Asian Games), technology (GPT-4o, Claude 3.5 Sonnet, Gemini 2.0, DeepSeek V3), science, and political events (such as TN 2026 Assembly Election won by TVK Vijay with 108 seats) up to September 2026.]` },
           ...chat.messages.map(m => ({ role: m.role, content: m.content }))
         ];
 
@@ -2317,7 +2323,8 @@
 
     async function fetchPollinationsAIChat(promptText) {
       try {
-        const encPrompt = encodeURIComponent(`[System: Knowledge cutoff Sept 2026] ${promptText}`);
+        const fullPrompt = `[System Directive: Today is September 2026. Updated with world news, sports, technology, and political events through September 2026]. User prompt: ${promptText}`;
+        const encPrompt = encodeURIComponent(fullPrompt);
         const response = await fetch(`https://text.pollinations.ai/${encPrompt}`);
         if (response.ok) {
           const text = await response.text();
