@@ -1643,6 +1643,46 @@
       font-weight: 600;
     }
 
+    .settings-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+      color: var(--text-tertiary);
+      margin: 18px 0 10px;
+      text-align: left;
+    }
+
+    .account-detail-box {
+      background: #171717;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .account-field-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .account-danger-box {
+      background: rgba(239, 68, 68, 0.05);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      border-radius: 10px;
+      padding: 14px;
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
     /* Mobile Adaptations */
     @media (max-width: 768px) {
       .sidebar {
@@ -3306,32 +3346,88 @@
           </div>
         `;
       } else if (tabName === 'account') {
+        const userUid = 'USR-' + Math.abs(STATE.userEmail.split('').reduce((a,c)=>((a<<5)-a)+c.charCodeAt(0),0)).toString(16).toUpperCase();
         container.innerHTML = `
           <div class="settings-head">
-            <h3>Account & Profile</h3>
+            <h3>Account Settings</h3>
             <button class="modal-close" onclick="closeModal('settings-modal')"><svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
           </div>
+
+          <!-- User Profile Hero Card -->
           <div class="user-profile-card">
             <div class="user-profile-avatar">${escapeHtml((STATE.userName.charAt(0) || 'U').toUpperCase())}</div>
             <div class="user-profile-info">
               <div class="user-profile-name">${escapeHtml(STATE.userName)}</div>
               <div class="user-profile-email">${escapeHtml(STATE.userEmail)}</div>
-              <span class="user-profile-badge">● Pro Plan (Active)</span>
+              <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
+                <span class="user-profile-badge">● Pro Plan (Active)</span>
+                <span style="font-size:11px; color:var(--text-tertiary); font-family:monospace;">ID: ${userUid}</span>
+              </div>
             </div>
           </div>
-          <div class="settings-row">
-            <div>
-              <div class="settings-row-label">Authentication Status</div>
-              <div class="settings-row-sub">Secure session token active in local database</div>
+
+          <!-- Profile Details Section -->
+          <div class="settings-section-title">Profile Information</div>
+          <div class="account-detail-box">
+            <div class="field-group" style="margin-bottom:0;">
+              <label>Full Name</label>
+              <div style="display:flex; gap:8px;">
+                <input type="text" class="modal-input" id="account-edit-name" value="${escapeHtml(STATE.userName)}" placeholder="Your full name">
+                <button class="btn-primary" style="white-space:nowrap;" onclick="updateAccountName()">Save</button>
+              </div>
             </div>
-            <span style="font-size:12px; color:var(--accent-green); font-weight:600;">Verified Active</span>
+            <div class="account-field-row" style="padding-top:8px; border-top:1px solid rgba(255,255,255,0.06);">
+              <div>
+                <div class="settings-row-label">Primary Email</div>
+                <div class="settings-row-sub">${escapeHtml(STATE.userEmail)}</div>
+              </div>
+              <span style="font-size:11px; background:rgba(16,163,127,0.15); color:var(--accent-green); padding:3px 8px; border-radius:12px; font-weight:600;">Verified</span>
+            </div>
           </div>
-          <div class="settings-row">
-            <div>
-              <div class="settings-row-label">Log Out</div>
-              <div class="settings-row-sub">Sign out of your active account session</div>
+
+          <!-- Subscription & Plan Details -->
+          <div class="settings-section-title">Subscription & Usage</div>
+          <div class="account-detail-box">
+            <div class="account-field-row">
+              <div>
+                <div class="settings-row-label">Current Plan</div>
+                <div class="settings-row-sub">Nova AI Pro Tier (Multimodal AI, DALL-E, Voice)</div>
+              </div>
+              <span style="font-size:12px; color:var(--accent-green); font-weight:700;">$20/month</span>
             </div>
-            <button class="btn-secondary" style="color:#ef4444; border-color:rgba(239,68,68,0.4);" onclick="closeModal('settings-modal'); performLogout();">Log Out</button>
+            <div class="account-field-row" style="padding-top:8px; border-top:1px solid rgba(255,255,255,0.06);">
+              <div>
+                <div class="settings-row-label">Daily Message Quota</div>
+                <div class="settings-row-sub">Unlimited high-speed reasoning queries</div>
+              </div>
+              <span style="font-size:12px; color:var(--text-primary); font-weight:600;">Unlimited</span>
+            </div>
+          </div>
+
+          <!-- Password & Security Section -->
+          <div class="settings-section-title">Security & Password</div>
+          <div class="account-detail-box">
+            <div class="field-group" style="margin-bottom:6px;">
+              <label>Current Password</label>
+              <input type="password" class="modal-input" id="account-cur-pass" placeholder="Enter current password">
+            </div>
+            <div class="field-group" style="margin-bottom:0;">
+              <label>New Password</label>
+              <div style="display:flex; gap:8px;">
+                <input type="password" class="modal-input" id="account-new-pass" placeholder="At least 6 characters">
+                <button class="btn-primary" style="white-space:nowrap;" onclick="updateAccountPassword()">Update</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Danger Zone -->
+          <div class="settings-section-title" style="color:#ef4444;">Danger Zone</div>
+          <div class="account-danger-box">
+            <div>
+              <div class="settings-row-label" style="color:#ef4444;">Delete Account</div>
+              <div class="settings-row-sub">Permanently delete your account and all conversations</div>
+            </div>
+            <button class="btn-secondary" style="color:#ef4444; border-color:rgba(239,68,68,0.5);" onclick="deleteAccountPermanently()">Delete</button>
           </div>
         `;
       } else if (tabName === 'data') {
@@ -3367,6 +3463,64 @@
       updateUserUI();
       closeModal('settings-modal');
       showToast('Custom instructions saved!');
+    }
+
+    function updateAccountName() {
+      const input = document.getElementById('account-edit-name');
+      if (!input) return;
+      const newName = input.value.trim();
+      if (!newName) {
+        showToast('Please enter a valid name');
+        return;
+      }
+      STATE.userName = newName;
+      const users = USER_DB.getAll();
+      const user = users.find(u => u.email.toLowerCase() === STATE.userEmail.toLowerCase());
+      if (user) {
+        user.name = newName;
+        localStorage.setItem(USER_DB.KEY, JSON.stringify(users));
+      }
+      saveStorage();
+      updateUserUI();
+      renderSettingsTab('account');
+      showToast('Account name updated successfully!');
+    }
+
+    function updateAccountPassword() {
+      const curPass = document.getElementById('account-cur-pass').value.trim();
+      const newPass = document.getElementById('account-new-pass').value.trim();
+
+      if (!curPass) {
+        showToast('Please enter your current password');
+        return;
+      }
+      if (!newPass || newPass.length < 6) {
+        showToast('New password must be at least 6 characters');
+        return;
+      }
+
+      const verify = USER_DB.verify(STATE.userEmail, curPass);
+      if (!verify.success) {
+        showToast('Incorrect current password');
+        return;
+      }
+
+      USER_DB.updatePassword(STATE.userEmail, newPass);
+      document.getElementById('account-cur-pass').value = '';
+      document.getElementById('account-new-pass').value = '';
+      showToast('Password updated successfully!');
+    }
+
+    function deleteAccountPermanently() {
+      if (confirm('Are you sure you want to permanently delete your account and all conversations? This action cannot be undone.')) {
+        const users = USER_DB.getAll().filter(u => u.email.toLowerCase() !== STATE.userEmail.toLowerCase());
+        localStorage.setItem(USER_DB.KEY, JSON.stringify(users));
+        STATE.chats = [];
+        saveStorage();
+        closeModal('settings-modal');
+        performLogout();
+        showToast('Account permanently deleted.');
+      }
     }
 
     function clearAllChatsConfirm() {
