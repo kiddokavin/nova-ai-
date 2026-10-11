@@ -245,6 +245,42 @@
       text-align: left;
     }
 
+    @keyframes authShake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+
+    .auth-shake {
+      animation: authShake 0.35s ease;
+    }
+
+    .auth-demo-pill {
+      margin-top: 14px;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      font-size: 11.5px;
+      color: var(--text-tertiary);
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .auth-demo-pill:hover {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: var(--accent-green);
+      color: var(--text-secondary);
+    }
+
+    .auth-demo-pill b {
+      color: var(--accent-green);
+    }
+
     .auth-pw-toggle {
       position: absolute;
       right: 12px;
@@ -1522,13 +1558,18 @@
         </button>
       </form>
 
+      <div class="auth-demo-pill" onclick="quickFillDemoAccount()" title="Click to auto-fill verified credentials">
+        <span>🔑 <b>Demo Verified Account:</b> kiddokavin@gmail.com</span>
+        <span>Password: <code>Password@123</code> (click to auto-fill)</span>
+      </div>
+
       <div class="auth-toggle-hint">
         Don't have an account? <a href="#" class="auth-toggle-link" onclick="event.preventDefault(); toggleAuthMode('signup');">Sign up</a>
       </div>
 
       <div class="auth-divider-line">OR</div>
 
-      <button type="button" class="sso-provider-btn" onclick="openGoogleAccountChooser()">
+      <button type="button" class="sso-provider-btn" onclick="handleGoogleSSO()">
         <svg class="sso-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
         Continue with Google
       </button>
@@ -1957,8 +1998,109 @@
       toastText: document.getElementById('toast-text')
     };
 
+    // --- Official User Registry Database ---
+    const USER_DB = {
+      KEY: 'nova_users_db',
+      SESSION_KEY: 'nova_session_token',
+
+      init() {
+        try {
+          if (!localStorage.getItem(this.KEY)) {
+            const defaultUsers = [
+              {
+                name: 'Kavin',
+                email: 'kiddokavin@gmail.com',
+                password: 'Password@123',
+                provider: 'local',
+                createdAt: '2026-01-01T00:00:00.000Z'
+              }
+            ];
+            localStorage.setItem(this.KEY, JSON.stringify(defaultUsers));
+          }
+        } catch(e) {
+          console.error('USER_DB init error:', e);
+        }
+      },
+
+      getAll() {
+        try {
+          return JSON.parse(localStorage.getItem(this.KEY) || '[]');
+        } catch(e) {
+          return [];
+        }
+      },
+
+      findByEmail(email) {
+        if (!email) return null;
+        const normalized = email.trim().toLowerCase();
+        return this.getAll().find(u => u.email.toLowerCase() === normalized) || null;
+      },
+
+      create(name, email, password, provider = 'local') {
+        const users = this.getAll();
+        const normalized = email.trim().toLowerCase();
+        if (users.some(u => u.email.toLowerCase() === normalized)) {
+          return { success: false, error: 'An account with this email already exists. Please sign in.' };
+        }
+        const newUser = {
+          name: name.trim() || 'User',
+          email: normalized,
+          password: password,
+          provider: provider,
+          createdAt: new Date().toISOString()
+        };
+        users.push(newUser);
+        localStorage.setItem(this.KEY, JSON.stringify(users));
+        return { success: true, user: newUser };
+      },
+
+      updatePassword(email, newPassword) {
+        const users = this.getAll();
+        const normalized = email.trim().toLowerCase();
+        const idx = users.findIndex(u => u.email.toLowerCase() === normalized);
+        if (idx === -1) {
+          return { success: false, error: 'No account found with this email address.' };
+        }
+        users[idx].password = newPassword;
+        localStorage.setItem(this.KEY, JSON.stringify(users));
+        return { success: true };
+      },
+
+      verify(email, password) {
+        const user = this.findByEmail(email);
+        if (!user) {
+          return { success: false, error: 'No account found with this email. Please click Sign up to create an account.' };
+        }
+        if (user.password !== password) {
+          return { success: false, error: 'Incorrect password. Please verify your credentials and try again.' };
+        }
+        return { success: true, user: user };
+      },
+
+      setSession(user) {
+        const token = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem(this.SESSION_KEY, token);
+        localStorage.setItem('nova_v5_auth', 'true');
+        localStorage.setItem('nova_v5_user', user.name);
+        localStorage.setItem('nova_v5_email', user.email);
+        STATE.isLoggedIn = true;
+        STATE.userName = user.name;
+        STATE.userEmail = user.email;
+        saveStorage();
+        updateUserUI();
+      },
+
+      clearSession() {
+        localStorage.removeItem(this.SESSION_KEY);
+        localStorage.setItem('nova_v5_auth', 'false');
+        STATE.isLoggedIn = false;
+        saveStorage();
+      }
+    };
+
     // --- Init ---
     window.addEventListener('DOMContentLoaded', () => {
+      USER_DB.init();
       loadStorage();
       initSpeech();
       initPuterUser();
@@ -1989,9 +2131,18 @@
       setTimeout(() => DOM.toast.classList.remove('show'), 2500);
     }
 
-    // --- Authentication System ---
+    // --- Official Authentication System ---
     function validateEmail(email) {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function quickFillDemoAccount() {
+      const emailInput = document.getElementById('login-email');
+      const passInput = document.getElementById('login-password');
+      if (emailInput) emailInput.value = 'kiddokavin@gmail.com';
+      if (passInput) passInput.value = 'Password@123';
+      clearAuthErrors();
+      showToast('Autofilled demo account credentials!');
     }
 
     function clearAuthErrors() {
@@ -2057,40 +2208,54 @@
       clearAuthErrors();
       const emailInput = document.getElementById('login-email');
       const passwordInput = document.getElementById('login-password');
+      const card = DOM.authViewLogin;
       const email = emailInput.value.trim();
       const password = passwordInput.value.trim();
 
       if (!email || !validateEmail(email)) {
         emailInput.classList.add('input-error');
+        card.classList.add('auth-shake');
+        setTimeout(() => card.classList.remove('auth-shake'), 400);
         showAuthError('login', 'Please enter a valid email address.');
         return;
       }
       if (!password) {
         passwordInput.classList.add('input-error');
+        card.classList.add('auth-shake');
+        setTimeout(() => card.classList.remove('auth-shake'), 400);
         showAuthError('login', 'Please enter your password.');
         return;
       }
 
-      // Show loader button state
+      // Button loading state
       const btn = DOM.loginSubmitBtn;
       const originalText = btn.innerHTML;
-      btn.innerHTML = `<div class="btn-loader"></div> Logging in...`;
+      btn.innerHTML = `<div class="btn-loader"></div> Verifying credentials...`;
       btn.disabled = true;
 
       setTimeout(() => {
         btn.innerHTML = originalText;
         btn.disabled = false;
 
-        STATE.isLoggedIn = true;
-        STATE.userEmail = email;
-        STATE.userName = email.split('@')[0] || 'Kavin';
-        saveStorage();
-        updateUserUI();
+        const result = USER_DB.verify(email, password);
+        if (!result.success) {
+          if (result.error.includes('No account found')) {
+            emailInput.classList.add('input-error');
+          } else {
+            passwordInput.classList.add('input-error');
+          }
+          card.classList.add('auth-shake');
+          setTimeout(() => card.classList.remove('auth-shake'), 400);
+          showAuthError('login', result.error);
+          return;
+        }
+
+        USER_DB.setSession(result.user);
         showAuthScreen(false);
         if (!STATE.chats || STATE.chats.length === 0) createNewChat();
         else renderHistory();
-        showToast('Signed in successfully');
-      }, 350);
+        showToast(`Welcome back, ${result.user.name}!`);
+      }, 450);
     }
 
     function performEmailSignUp() {
@@ -2099,6 +2264,7 @@
       const emailInput = document.getElementById('signup-email');
       const passwordInput = document.getElementById('signup-password');
       const termsCheck = document.getElementById('signup-terms-check');
+      const card = DOM.authViewSignup;
 
       const name = nameInput.value.trim();
       const email = emailInput.value.trim();
@@ -2106,67 +2272,127 @@
 
       if (!name) {
         nameInput.classList.add('input-error');
+        card.classList.add('auth-shake');
+        setTimeout(() => card.classList.remove('auth-shake'), 400);
         showAuthError('signup', 'Please enter your full name.');
         return;
       }
       if (!email || !validateEmail(email)) {
         emailInput.classList.add('input-error');
+        card.classList.add('auth-shake');
+        setTimeout(() => card.classList.remove('auth-shake'), 400);
         showAuthError('signup', 'Please enter a valid email address.');
         return;
       }
       if (!password || password.length < 6) {
         passwordInput.classList.add('input-error');
-        showAuthError('signup', 'Password must be at least 6 characters.');
+        card.classList.add('auth-shake');
+        setTimeout(() => card.classList.remove('auth-shake'), 400);
+        showAuthError('signup', 'Password must be at least 6 characters long.');
         return;
       }
       if (termsCheck && !termsCheck.checked) {
+        card.classList.add('auth-shake');
+        setTimeout(() => card.classList.remove('auth-shake'), 400);
         showAuthError('signup', 'You must agree to the Terms & Privacy Policy to continue.');
         return;
       }
 
       const btn = DOM.signupSubmitBtn;
       const originalText = btn.innerHTML;
-      btn.innerHTML = `<div class="btn-loader"></div> Creating Account...`;
+      btn.innerHTML = `<div class="btn-loader"></div> Registering account...`;
       btn.disabled = true;
 
       setTimeout(() => {
         btn.innerHTML = originalText;
         btn.disabled = false;
 
-        STATE.isLoggedIn = true;
-        STATE.userEmail = email;
-        STATE.userName = name;
-        saveStorage();
-        updateUserUI();
+        const result = USER_DB.create(name, email, password, 'local');
+        if (!result.success) {
+          emailInput.classList.add('input-error');
+          card.classList.add('auth-shake');
+          setTimeout(() => card.classList.remove('auth-shake'), 400);
+          showAuthError('signup', result.error);
+          return;
+        }
+
+        USER_DB.setSession(result.user);
         showAuthScreen(false);
         if (!STATE.chats || STATE.chats.length === 0) createNewChat();
         else renderHistory();
-        showToast('Account created & signed in!');
-      }, 350);
+        showToast(`Account created! Welcome, ${result.user.name}!`);
+      }, 500);
     }
 
     function performForgotReset() {
       clearAuthErrors();
       const emailInput = document.getElementById('forgot-email');
       const email = emailInput.value.trim();
+      const card = DOM.authViewForgot;
 
       if (!email || !validateEmail(email)) {
         emailInput.classList.add('input-error');
+        card.classList.add('auth-shake');
+        setTimeout(() => card.classList.remove('auth-shake'), 400);
         showAuthError('forgot', 'Please enter a valid email address.');
+        return;
+      }
+
+      const user = USER_DB.findByEmail(email);
+      if (!user) {
+        emailInput.classList.add('input-error');
+        card.classList.add('auth-shake');
+        setTimeout(() => card.classList.remove('auth-shake'), 400);
+        showAuthError('forgot', 'No registered account found with this email.');
         return;
       }
 
       const btn = DOM.forgotSubmitBtn;
       const originalText = btn.innerHTML;
-      btn.innerHTML = `<div class="btn-loader"></div> Sending link...`;
+      btn.innerHTML = `<div class="btn-loader"></div> Verifying account...`;
       btn.disabled = true;
 
       setTimeout(() => {
         btn.innerHTML = originalText;
         btn.disabled = false;
-        showToast(`Recovery email sent to ${email}`);
-        toggleAuthMode('login');
+        const newPassword = prompt(`Create a new password for ${email}:`, 'Password@123');
+        if (newPassword && newPassword.length >= 6) {
+          USER_DB.updatePassword(email, newPassword);
+          showToast('Password updated successfully! Please sign in.');
+          toggleAuthMode('login');
+          document.getElementById('login-email').value = email;
+          document.getElementById('login-password').value = newPassword;
+        } else if (newPassword) {
+          showToast('Password must be at least 6 characters.');
+        }
       }, 400);
+    }
+
+    async function handleGoogleSSO() {
+      if (window.puter && puter.auth && puter.auth.signIn) {
+        try {
+          showToast('Connecting to Cloud OAuth...');
+          await puter.auth.signIn();
+          const pUser = await puter.auth.getUser();
+          if (pUser && (pUser.username || pUser.email)) {
+            const email = pUser.email || (pUser.username.toLowerCase() + '@gmail.com');
+            const name = pUser.username || 'Google User';
+            let user = USER_DB.findByEmail(email);
+            if (!user) {
+              user = USER_DB.create(name, email, 'oauth_sso_' + Date.now(), 'google').user;
+            }
+            USER_DB.setSession(user);
+            showAuthScreen(false);
+            if (!STATE.chats || STATE.chats.length === 0) createNewChat();
+            else renderHistory();
+            showToast(`Signed in with Google as ${email}`);
+            return;
+          }
+        } catch (e) {
+          console.warn('Puter cloud sign in error or popup dismissed:', e);
+        }
+      }
+      openGoogleAccountChooser();
     }
 
     function openGoogleAccountChooser() {
@@ -2174,16 +2400,16 @@
     }
 
     function selectGoogleAccount(name, email) {
-      STATE.isLoggedIn = true;
-      STATE.userName = name;
-      STATE.userEmail = email;
+      let user = USER_DB.findByEmail(email);
+      if (!user) {
+        user = USER_DB.create(name, email, 'google_sso_verified', 'google').user;
+      }
+      USER_DB.setSession(user);
       closeModal('google-chooser-modal');
-      saveStorage();
-      updateUserUI();
       showAuthScreen(false);
       if (!STATE.chats || STATE.chats.length === 0) createNewChat();
       else renderHistory();
-      showToast(`Signed in as ${email}`);
+      showToast(`Signed in with Google as ${email}`);
     }
 
     function promptCustomGoogleAccount() {
@@ -2198,11 +2424,12 @@
     }
 
     function performGuestLogin(provider = 'Guest') {
-      STATE.isLoggedIn = true;
-      STATE.userName = provider;
-      STATE.userEmail = provider.toLowerCase().replace(/\s+/g, '') + '@nova.ai';
-      saveStorage();
-      updateUserUI();
+      const guestEmail = provider.toLowerCase().replace(/\s+/g, '') + '@nova.ai';
+      let user = USER_DB.findByEmail(guestEmail);
+      if (!user) {
+        user = USER_DB.create(provider, guestEmail, 'guest_pass_123', 'guest').user;
+      }
+      USER_DB.setSession(user);
       showAuthScreen(false);
       if (!STATE.chats || STATE.chats.length === 0) createNewChat();
       else renderHistory();
@@ -2210,10 +2437,12 @@
     }
 
     function performLogout() {
-      STATE.isLoggedIn = false;
-      saveStorage();
+      USER_DB.clearSession();
+      if (window.puter && puter.auth && puter.auth.signOut) {
+        try { puter.auth.signOut(); } catch(e) {}
+      }
       showAuthScreen(true);
-      showToast('Logged out');
+      showToast('Successfully logged out');
     }
 
     // --- Storage ---
