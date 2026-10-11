@@ -1479,6 +1479,170 @@
       outline: none;
     }
 
+    /* Official ChatGPT Settings Form Elements */
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+      text-align: left;
+      width: 100%;
+    }
+
+    .field-group label {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .field-group .field-sub {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-top: -2px;
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+
+    .field-group input[type="text"],
+    .field-group textarea,
+    .modal-input,
+    .modal-textarea {
+      width: 100%;
+      background: #171717;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px 14px;
+      color: #ffffff;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      box-sizing: border-box;
+    }
+
+    .field-group input[type="text"]:focus,
+    .field-group textarea:focus,
+    .modal-input:focus,
+    .modal-textarea:focus {
+      border-color: var(--accent-green);
+      box-shadow: 0 0 0 2px rgba(16, 163, 127, 0.25);
+    }
+
+    .field-group textarea {
+      resize: vertical;
+      min-height: 100px;
+      line-height: 1.5;
+    }
+
+    .modal-footer-btns {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 10px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      width: 100%;
+    }
+
+    .btn-primary {
+      background: var(--accent-green);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 18px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.15s ease, transform 0.1s ease;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-green-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 13.5px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.15s ease;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .user-profile-card {
+      background: #171717;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .user-profile-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 700;
+      box-shadow: 0 0 12px rgba(16, 163, 127, 0.3);
+    }
+
+    .user-profile-info {
+      flex: 1;
+      text-align: left;
+    }
+
+    .user-profile-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .user-profile-email {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .user-profile-badge {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 2px 8px;
+      background: rgba(16, 163, 127, 0.15);
+      border: 1px solid rgba(16, 163, 127, 0.3);
+      color: var(--accent-green);
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
     /* Mobile Adaptations */
     @media (max-width: 768px) {
       .sidebar {
@@ -1909,8 +2073,12 @@
           General
         </button>
         <button class="settings-tab-btn" id="tab-btn-persona" onclick="switchSettingsTab('persona')">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <svg class="icon" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
           Personalization
+        </button>
+        <button class="settings-tab-btn" id="tab-btn-account" onclick="switchSettingsTab('account')">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          Account
         </button>
         <button class="settings-tab-btn" id="tab-btn-data" onclick="switchSettingsTab('data')">
           <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
@@ -3121,13 +3289,50 @@
           </div>
           <div class="field-group">
             <label>What would you like Nova AI to know about you?</label>
-            <input type="text" id="setting-user-name" value="${escapeHtml(STATE.userName)}" placeholder="Your name or role..." onchange="STATE.userName=this.value; updateUserUI(); saveStorage();">
+            <div class="field-sub">Where are you based? What do you do? What are your preferences or key context?</div>
+            <input type="text" class="modal-input" id="setting-user-name" value="${escapeHtml(STATE.userName)}" placeholder="e.g. Software Engineer, Student, Content Creator...">
           </div>
           <div class="field-group">
             <label>How would you like Nova AI to respond? (System Persona)</label>
-            <textarea rows="5" id="setting-system-prompt" onchange="STATE.systemPrompt=this.value; saveStorage();">${escapeHtml(STATE.systemPrompt)}</textarea>
+            <div class="field-sub">How formal or casual? Any preferred response formatting (bullet points, concise, detailed)?</div>
+            <textarea class="modal-textarea" rows="4" id="setting-system-prompt" placeholder="Enter system instructions...">${escapeHtml(STATE.systemPrompt)}</textarea>
           </div>
-          <button class="btn-primary" style="align-self:flex-end;" onclick="saveStorage(); showToast('Personalization saved'); closeModal('settings-modal');">Save Persona</button>
+          <div class="modal-footer-btns">
+            <button class="btn-secondary" onclick="closeModal('settings-modal')">Cancel</button>
+            <button class="btn-primary" onclick="savePersonalization()">
+              <svg class="icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              Save Instructions
+            </button>
+          </div>
+        `;
+      } else if (tabName === 'account') {
+        container.innerHTML = `
+          <div class="settings-head">
+            <h3>Account & Profile</h3>
+            <button class="modal-close" onclick="closeModal('settings-modal')"><svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+          </div>
+          <div class="user-profile-card">
+            <div class="user-profile-avatar">${escapeHtml((STATE.userName.charAt(0) || 'U').toUpperCase())}</div>
+            <div class="user-profile-info">
+              <div class="user-profile-name">${escapeHtml(STATE.userName)}</div>
+              <div class="user-profile-email">${escapeHtml(STATE.userEmail)}</div>
+              <span class="user-profile-badge">● Pro Plan (Active)</span>
+            </div>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Authentication Status</div>
+              <div class="settings-row-sub">Secure session token active in local database</div>
+            </div>
+            <span style="font-size:12px; color:var(--accent-green); font-weight:600;">Verified Active</span>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Log Out</div>
+              <div class="settings-row-sub">Sign out of your active account session</div>
+            </div>
+            <button class="btn-secondary" style="color:#ef4444; border-color:rgba(239,68,68,0.4);" onclick="closeModal('settings-modal'); performLogout();">Log Out</button>
+          </div>
         `;
       } else if (tabName === 'data') {
         container.innerHTML = `
@@ -3151,6 +3356,17 @@
           </div>
         `;
       }
+    }
+
+    function savePersonalization() {
+      const nameInput = document.getElementById('setting-user-name');
+      const promptInput = document.getElementById('setting-system-prompt');
+      if (nameInput) STATE.userName = nameInput.value.trim() || 'User';
+      if (promptInput) STATE.systemPrompt = promptInput.value.trim();
+      saveStorage();
+      updateUserUI();
+      closeModal('settings-modal');
+      showToast('Custom instructions saved!');
     }
 
     function clearAllChatsConfirm() {
